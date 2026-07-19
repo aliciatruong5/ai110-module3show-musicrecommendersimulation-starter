@@ -19,11 +19,38 @@ My version is a small content-based music recommender. It reads a catalog of son
 
 ### How real-world recommendations work
 
-  Real-world recommenders like Spotify predict what you'll want to hear by combining several signals: collaborative filtering (finding patterns in what millions of similar users listen to), content-based analysis (looking at a song's own attributes, from audio features to genre), and context and feedback (the time of day, and whether you skip, save, or replay a track), all fused together and continuously updated as you listen.
+  Real-world recommenders like Spotify and YouTube rely on two main kinds of data. The first is content features — attributes of the item itself, such as a song's genre, mood, tempo, energy, or a video's topic and length. These describe what the item is, so the system can find others that are similar. The second is user history — what you've played, skipped, saved, liked, or watched to the end, plus context like time of day. This describes what you actually enjoy, and it also lets the system spot patterns across users ("people who liked this also liked that"). The platforms combine both: content features help recommend brand-new items that no one has interacted with yet, while user history captures personal taste and surprising connections that the attributes alone would miss. A ranking model weighs all these signals together to decide what to show next, and it keeps updating as you give it more feedback.
 
   ### My Version 
 
   My version focuses on just the content-based piece, since it works without any other users' data. It prioritizes matching a song's attributes to a user's stated taste — weighting genre and mood most heavily, rewarding songs whose energy is close to what the user wants rather than simply louder or quieter, and favoring acoustic tracks when the user prefers them. It's a deliberately simplified, transparent version of one part of how the real systems work
+
+### Song features
+
+**Identifiers (not scored):**
+- `id`, `title`, `artist`
+
+**Used in scoring:**
+- `genre` — categorical (pop, lofi, rock, etc.)
+- `mood` — categorical (happy, chill, intense, etc.)
+- `energy` — numeric 0–1
+- `acousticness` — numeric 0–1
+
+**Reserved for experiments:**
+- `valence`, `danceability` — numeric 0–1
+- `tempo_bpm` — numeric (~60–152, not normalized)
+
+### UserProfile fields
+- `favorite_genre` — matched against the song's genre
+- `favorite_mood` — matched against the song's mood
+- `target_energy` — desired energy level (scored by closeness, not "higher is better")
+- `likes_acoustic` — when true, rewards acoustic songs
+
+### Features that connect them in the score
+- `genre` ↔ `favorite_genre`
+- `mood` ↔ `favorite_mood`
+- `energy` ↔ `target_energy`
+- `acousticness` ↔ `likes_acoustic`
 
 ---
 

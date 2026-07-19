@@ -5,7 +5,7 @@ from dataclasses import dataclass
 # Feature weights: how much each signal matters in the final score.
 # Tune these in your Experiments section and watch how the ranking changes.
 WEIGHT_GENRE = 2.0
-WEIGHT_MOOD = 1.5
+WEIGHT_MOOD = 1.0
 WEIGHT_ENERGY = 1.0
 WEIGHT_ACOUSTIC = 1.0
 

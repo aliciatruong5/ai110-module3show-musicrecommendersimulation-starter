@@ -90,17 +90,37 @@ You can add more tests in `tests/test_recommender.py`.
 ---
 
 ## Sample Recommendation Output
-
-Paste a sample of your recommender's output here as a text block so a reader can see what it produces:
-
+### Sample Profile
 ```
-# e.g.:
-# User profile: genre=indie, mood=chill, energy=low
-# Recommendations:
-#   1. ...
-#   2. ...
-#   3. ...
+# A lofi-loving, low-energy studier who likes acoustic music
+user_prefs = {
+    "genre": "lofi",
+    "mood": "chill",
+    "energy": 0.4,
+    "likes_acoustic": True,
+}
 ```
+### Output for Profile
+```
+Profile: lofi_studier -> {'genre': 'lofi', 'mood': 'chill', 'energy': 0.4, 'likes_acoustic': True}
+Top recommendations:
+
+Library Rain - Score: 4.81
+Because: genre matches (lofi); mood matches (chill); energy is close (0.35); acoustic (0.86)
+
+Midnight Coding - Score: 4.69
+Because: genre matches (lofi); mood matches (chill); energy is close (0.42); acoustic (0.71)
+
+Focus Flow - Score: 3.78
+Because: genre matches (lofi); energy is close (0.4); acoustic (0.78)
+
+Spacewalk Thoughts - Score: 2.80
+Because: mood matches (chill); energy is close (0.28); acoustic (0.92)
+
+Coffee Shop Stories - Score: 1.86
+Because: energy is close (0.37); acoustic (0.89)
+```
+As you can see in this sample, this system shows genre outweighing mood. 
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->
 

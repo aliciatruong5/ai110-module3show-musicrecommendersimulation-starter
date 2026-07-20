@@ -62,11 +62,13 @@ class Recommender:
         return total
 
     def recommend(self, user: UserProfile, k: int = 5) -> List[Song]:
+        """Return the top k songs for the user, highest score first."""
         # Score every song, then sort highest-first and take the top k.
         ranked = sorted(self.songs, key=lambda s: self.score(user, s), reverse=True)
         return ranked[:k]
 
     def explain_recommendation(self, user: UserProfile, song: Song) -> str:
+        """Return a plain-language sentence explaining why the song matched."""
         # Turn the matched features into a human-readable "because" string.
         reasons: List[str] = []
         if song.genre == user.favorite_genre:
@@ -82,19 +84,26 @@ class Recommender:
             return f"'{song.title}' is a loose match for your taste."
         return f"'{song.title}' was recommended because " + ", and ".join(reasons) + "."
 
-NUMERIC_FIELDS = ("energy", "tempo_bpm", "valence", "danceability", "acousticness")
+# CSV values are read as strings, so we convert numeric columns to real
+# numbers up front — otherwise "0.42" > "0.8" compares as text, not math.
+INT_FIELDS = ("id", "tempo_bpm")                                    # whole numbers
+FLOAT_FIELDS = ("energy", "valence", "danceability", "acousticness")  # 0-1 decimals
 
 def load_songs(csv_path: str) -> List[Dict]:
     """
-    Loads songs from a CSV file into a list of dicts.
-    Numeric columns are converted from strings to floats.
+    Loads songs from a CSV file into a list of dicts, one per row.
+    Numeric columns are converted from strings to int/float so they can be
+    used in arithmetic; text columns (title, artist, genre, mood) stay strings.
     Required by src/main.py
     """
     songs: List[Dict] = []
     with open(csv_path, newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
+        reader = csv.DictReader(f)  # each row becomes a dict keyed by the header
         for row in reader:
-            for field in NUMERIC_FIELDS:
+            for field in INT_FIELDS:
+                if field in row:
+                    row[field] = int(row[field])
+            for field in FLOAT_FIELDS:
                 if field in row:
                     row[field] = float(row[field])
             songs.append(row)
@@ -138,11 +147,13 @@ def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tup
     Scores every song, ranks highest-first, and returns the top k as
     (song_dict, score, explanation) tuples.
     """
-    scored = []
-    for song in songs:
-        score, reasons = score_song(user_prefs, song)
-        explanation = "; ".join(reasons) if reasons else "weak match"
-        scored.append((song, score, explanation))
-
-    scored.sort(key=lambda item: item[1], reverse=True)
-    return scored[:k]
+    # Score every song, then sort highest-first and keep the top k.
+    scored = [
+        (song, *score_song(user_prefs, song))  # (song, score, reasons)
+        for song in songs
+    ]
+    ranked = sorted(scored, key=lambda item: item[1], reverse=True)
+    return [
+        (song, score, "; ".join(reasons) if reasons else "weak match")
+        for song, score, reasons in ranked[:k]
+    ]

@@ -74,7 +74,7 @@ pip install -r requirements.txt
 3. Run the app:
 
 ```bash
-python -m src.main
+python3 -m src.main
 ```
 
 ### Running Tests
@@ -89,37 +89,112 @@ You can add more tests in `tests/test_recommender.py`.
 
 ---
 
-## Sample Recommendation Output
-### Sample Profile
+## Sample Recommendation Output for Each Profile
 ```
-# A lofi-loving, low-energy studier who likes acoustic music
-user_prefs = {
-    "genre": "lofi",
-    "mood": "chill",
-    "energy": 0.4,
-    "likes_acoustic": True,
-}
+============================================================
+  Recommendations for: pop_fan
+  Taste: genre=pop, mood=happy, energy=0.8, likes_acoustic=False
+============================================================
+
+1. Sunrise City  —  Neon Echo
+   Score: 3.98
+   Why:   genre matches (pop); mood matches (happy); energy is close (0.82)
+
+2. Gym Hero  —  Max Pulse
+   Score: 2.87
+   Why:   genre matches (pop); energy is close (0.93)
+
+3. Rooftop Lights  —  Indigo Parade
+   Score: 1.96
+   Why:   mood matches (happy); energy is close (0.76)
+
+4. Night Drive Loop  —  Neon Echo
+   Score: 0.95
+   Why:   energy is close (0.75)
+
+5. Concrete Kings  —  Verse Machine
+   Score: 0.90
+   Why:   energy is close (0.7)
 ```
-### Output for Profile
 ```
-Profile: lofi_studier -> {'genre': 'lofi', 'mood': 'chill', 'energy': 0.4, 'likes_acoustic': True}
-Top recommendations:
+============================================================
+  Recommendations for: lofi_studier
+  Taste: genre=lofi, mood=chill, energy=0.4, likes_acoustic=True
+============================================================
 
-Library Rain - Score: 4.81
-Because: genre matches (lofi); mood matches (chill); energy is close (0.35); acoustic (0.86)
+1. Library Rain  —  Paper Lanterns
+   Score: 4.81
+   Why:   genre matches (lofi); mood matches (chill); energy is close (0.35); acoustic (0.86)
 
-Midnight Coding - Score: 4.69
-Because: genre matches (lofi); mood matches (chill); energy is close (0.42); acoustic (0.71)
+2. Midnight Coding  —  LoRoom
+   Score: 4.69
+   Why:   genre matches (lofi); mood matches (chill); energy is close (0.42); acoustic (0.71)
 
-Focus Flow - Score: 3.78
-Because: genre matches (lofi); energy is close (0.4); acoustic (0.78)
+3. Focus Flow  —  LoRoom
+   Score: 3.78
+   Why:   genre matches (lofi); energy is close (0.4); acoustic (0.78)
 
-Spacewalk Thoughts - Score: 2.80
-Because: mood matches (chill); energy is close (0.28); acoustic (0.92)
+4. Spacewalk Thoughts  —  Orbit Bloom
+   Score: 2.80
+   Why:   mood matches (chill); energy is close (0.28); acoustic (0.92)
 
-Coffee Shop Stories - Score: 1.86
-Because: energy is close (0.37); acoustic (0.89)
+5. Coffee Shop Stories  —  Slow Stereo
+   Score: 1.86
+   Why:   energy is close (0.37); acoustic (0.89)
 ```
+```
+============================================================
+  Recommendations for: edm_fan
+  Taste: genre=EDM, mood=euphoric, energy=0.95, likes_acoustic=False
+============================================================
+
+1. Pulse Reactor  —  Kilovolt
+   Score: 4.00
+   Why:   genre matches (EDM); mood matches (euphoric); energy is close (0.95)
+
+2. Gym Hero  —  Max Pulse
+   Score: 0.98
+   Why:   energy is close (0.93)
+
+3. Iron Verdict  —  Blackspire
+   Score: 0.97
+   Why:   energy is close (0.98)
+
+4. Storm Runner  —  Voltline
+   Score: 0.96
+   Why:   energy is close (0.91)
+
+5. Sunrise City  —  Neon Echo
+   Score: 0.87
+   Why:   energy is close (0.82)
+```
+```
+============================================================
+  Recommendations for: classical_fan
+  Taste: genre=classical, mood=melancholy, energy=0.3, likes_acoustic=True
+============================================================
+
+1. Winter Elegy  —  The Aurelian Quartet
+   Score: 4.95
+   Why:   genre matches (classical); mood matches (melancholy); energy is close (0.3); acoustic (0.95)
+
+2. Spacewalk Thoughts  —  Orbit Bloom
+   Score: 1.90
+   Why:   energy is close (0.28); acoustic (0.92)
+
+3. Coffee Shop Stories  —  Slow Stereo
+   Score: 1.82
+   Why:   energy is close (0.37); acoustic (0.89)
+
+4. Library Rain  —  Paper Lanterns
+   Score: 1.81
+   Why:   energy is close (0.35); acoustic (0.86)
+
+5. Focus Flow  —  LoRoom
+   Score: 1.68
+   Why:   energy is close (0.4); acoustic (0.78)
+```
+
 As you can see in this sample, this system shows genre outweighing mood. 
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->

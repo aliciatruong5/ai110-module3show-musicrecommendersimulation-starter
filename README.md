@@ -203,38 +203,117 @@ As you can see in this sample, this system shows genre outweighing mood.
 
 ## Experiments You Tried
 
-Use this section to document the experiments you ran. For example:
+### EXPERIMENT 1: WEIGHT_GENRE 2.0 -> 0.5 (profile: pop_fan)
 
-- What happened when you changed the weight on genre from 2.0 to 0.5
-- What happened when you added tempo or valence to the score
-- How did your system behave for different types of users
+```
+WEIGHT_GENRE = 2.0:
+   Sunrise City         3.98
+   Gym Hero             2.87
+   Rooftop Lights       1.96
+   Night Drive Loop     0.95
+   Concrete Kings       0.90
+
+WEIGHT_GENRE = 0.5:
+   Sunrise City         2.48
+   Rooftop Lights       1.96
+   Gym Hero             1.37
+   Night Drive Loop     0.95
+   Concrete Kings       0.90
+```
+In this experiment, I lowered the genre's weight. The genre weight acts as a tie-breaker between "right genre" and "right mood" songs — turning it down lets other features decide the order.
+
+### EXPERIMENT 2: adding valence vs raw tempo
+```
+Baseline (pop_fan):
+   Sunrise City         3.98
+   Gym Hero             2.87
+   Rooftop Lights       1.96
+   Night Drive Loop     0.95
+   Concrete Kings       0.90
+
++ valence term (normalized, well-behaved):
+   Sunrise City         4.94
+   Gym Hero             3.84
+   Rooftop Lights       2.95
+   Island Time          1.80
+   Pulse Reactor        1.80
+
++ RAW tempo term (unnormalized, dominates):
+   Iron Verdict         160.82
+   Storm Runner         152.89
+   Gym Hero             134.87
+   Pulse Reactor        128.85
+   Rooftop Lights       125.96
+```
+This is the normalization trap in action — an unnormalized feature silently hijacks the entire score. It's the strongest argument for why tempo_bpm must be scaled to 0–1 before use (or left out).
+
+### "Adversarial" User Profiles/Edge Cases
+
+```
+================================================================
+conflicting_energy_mood: {'genre': 'classical', 'mood': 'melancholy', 'energy': 0.95, 'likes_acoustic': False}
+  1. Winter Elegy         [classical/melancholy] score=3.35  (genre matches (classical); mood matches (melancholy))
+  2. Pulse Reactor        [EDM/euphoric] score=1.00  (energy is close (0.95))
+  3. Gym Hero             [pop/intense] score=0.98  (energy is close (0.93))
+
+================================================================
+nonexistent_genre: {'genre': 'reggaeton', 'mood': 'happy', 'energy': 0.7, 'likes_acoustic': False}
+  1. Rooftop Lights       [indie pop/happy] score=1.94  (mood matches (happy); energy is close (0.76))
+  2. Sunrise City         [pop/happy] score=1.88  (mood matches (happy); energy is close (0.82))
+  3. Concrete Kings       [hip-hop/confident] score=1.00  (energy is close (0.7))
+
+================================================================
+wrong_case: {'genre': 'Pop', 'mood': 'Happy', 'energy': 0.8, 'likes_acoustic': False}
+  1. Sunrise City         [pop/happy] score=0.98  (energy is close (0.82))
+  2. Rooftop Lights       [indie pop/happy] score=0.96  (energy is close (0.76))
+  3. Night Drive Loop     [synthwave/moody] score=0.95  (energy is close (0.75))
+
+================================================================
+empty: {}
+  1. Sunrise City         [pop/happy] score=0.00  (weak match)
+  2. Midnight Coding      [lofi/chill] score=0.00  (weak match)
+  3. Storm Runner         [rock/intense] score=0.00  (weak match)
+
+================================================================
+acoustic_only: {'likes_acoustic': True}
+  1. Winter Elegy         [classical/melancholy] score=0.95  (acoustic (0.95))
+  2. Spacewalk Thoughts   [ambient/chill] score=0.92  (acoustic (0.92))
+  3. Coffee Shop Stories  [jazz/relaxed] score=0.89  (acoustic (0.89))
+
+================================================================
+genre_mood_impossible: {'genre': 'metal', 'mood': 'chill', 'energy': 0.9, 'likes_acoustic': False}
+  1. Iron Verdict         [metal/aggressive] score=2.92  (genre matches (metal); energy is close (0.98))
+  2. Midnight Coding      [lofi/chill] score=1.52  (mood matches (chill))
+  3. Library Rain         [lofi/chill] score=1.45  (mood matches (chill))
+
+================================================================
+energy_out_of_range: {'genre': 'pop', 'mood': 'happy', 'energy': 2.0, 'likes_acoustic': False}
+  1. Sunrise City         [pop/happy] score=2.82  (genre matches (pop); mood matches (happy))
+  2. Gym Hero             [pop/intense] score=1.93  (genre matches (pop))
+  3. Rooftop Lights       [indie pop/happy] score=0.76  (mood matches (happy))
+```
 
 ---
 
 ## Limitations and Risks
 
-Summarize some limitations of your recommender.
+Some limitations are
+ - Genre lock-in, where the genre carries the highest weight and is scored by the exact match only.
+ - No genre similarity, which enforces narrowness
+ - Pure exploitation, zero exploration, where the same profile always returns the same songs in the same order
+ - Acoustic-preference bias, where the likes_acoustic=True unlocks a fifth scoring term (up to +1.0) that False users never get
+ - Catalog representation bias — the sparse-genre cliff, where genres with more songs serve their fans far better.
 
-Examples:
-
-- It only works on a tiny catalog
-- It does not understand lyrics or language
-- It might over favor one genre or mood
-
-You will go deeper on this in your model card.
+This will go deeper in the model card.
 
 ---
 
 ## Reflection
 
-Read and complete `model_card.md`:
+With this project, I learned that recommenders turn data into predictions by scoring. I always thought it would guess what I would like to hear by seeing what I just heard. The system would compare each song with what the user's preference then give each song a number for how well it would match with the user. It made me realize that the prediction is not really a prediction. It is just math on what the user liked to hear more than the rest. This made me see how bias can show up. It would favor the songs that user would listen to more and add that to the points that it had. So the user's music tastes more depends on what their dataset looks like not their "tastes"
 
 [**Model Card**](model_card.md)
 
-Write 1 to 2 paragraphs here about what you learned:
-
-- about how recommenders turn data into predictions
-- about where bias or unfairness could show up in systems like this
 
 
 
